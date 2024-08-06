@@ -175,7 +175,7 @@ namespace Win11Toolbar
             this.ClientSize = new System.Drawing.Size(TabManager.Instance.MaxWidth + 5, TabManager.Instance.MaxHeight + 35);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "ToobarForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Location = new Point(-1000, -1000);
             this.Text = "ToobarForm";
             this.TopMost = true;

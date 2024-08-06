@@ -12,10 +12,10 @@ namespace Win11Toolbar
 {
     internal static class Program
     {
-        static ConfigManager cm = ConfigManager.Instance;
-        static TabManager tm = TabManager.Instance;
-        static Win11Toolbar.ToobarForm _toolbarForm = new Win11Toolbar.ToobarForm();
-        static Win11Toolbar.ConfigurationForm _configForm = new Win11Toolbar.ConfigurationForm();
+        static ConfigManager cm;
+        static TabManager tm;
+        static Win11Toolbar.ToobarForm _toolbarForm;
+        static Win11Toolbar.ConfigurationForm _configForm;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -26,8 +26,14 @@ namespace Win11Toolbar
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new NotifyIconForm());
 
+            cm = ConfigManager.Instance;
+            tm = TabManager.Instance;
+            _toolbarForm = new Win11Toolbar.ToobarForm();
+            _configForm = new Win11Toolbar.ConfigurationForm();
+
+            _toolbarForm.Hide();
+            _toolbarForm.LostFocus += _toolbarForm_LostFocus;
             NotifyIcon _notifiyIcon = new NotifyIcon();
-            //_notifiyIcon.Click += new EventHandler(_notifiyIcon_Click);
             _notifiyIcon.MouseClick += _notifiyIcon_MouseClick;
             _notifiyIcon.Visible = true;
             _notifiyIcon.Icon = Win11Toolbar.Properties.Resources.turtle_shell;
@@ -38,27 +44,23 @@ namespace Win11Toolbar
         {
             if (e.Button == MouseButtons.Left)
             {
+                Point cursPos = Utilities.GetCursorPosition();
+                if (_toolbarForm.form_X == 0)
+                {
+                    _toolbarForm.form_X = cursPos.X - (_toolbarForm.Width / 2);
+                }
                 _toolbarForm.Show();
             }
             else if (e.Button == MouseButtons.Right)
             {
                 _configForm.Show();
             }
-            throw new NotImplementedException();
         }
 
-        /*
-        public static Icon GetIcons()
+        private static void _toolbarForm_LostFocus(object sender, EventArgs e)
         {
-            string path = @"C:\Users\casdiem2\Desktop\PS";
-            string[] files = Directory.GetFiles(path);
-            foreach (string file in files)
-            {
-                Console.WriteLine(file);
-            }
-            
-            return System.Drawing.Icon.ExtractAssociatedIcon(files[0]);
+            Win11Toolbar.ToobarForm tf = (Win11Toolbar.ToobarForm)sender;
+            tf.Hide();
         }
-        */
     }
 }

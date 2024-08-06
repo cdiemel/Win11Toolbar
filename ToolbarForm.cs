@@ -16,6 +16,9 @@ namespace Win11Toolbar
     public partial class ToobarForm : Form
     {
         Utilities.Win11Theme Theme;
+        public int form_X = 0;
+        int form_Y = 0;
+
         public ToobarForm()
         {
             Theme = Utilities.GetTheme();
@@ -23,8 +26,15 @@ namespace Win11Toolbar
             Console.WriteLine(Theme.Background.ToString());
 
             InitializeComponent();
-            this.LostFocus += Form1_LostFocus;
-            //this.Hide();
+            this.Shown += ToobarForm_Shown;
+        }
+
+        private void ToobarForm_Shown(object sender, EventArgs e)
+        {
+            Rectangle r = Screen.PrimaryScreen.WorkingArea;
+            this.form_Y = r.Height - this.Height - 10;
+            this.Top = form_Y;
+            this.Left = form_X;
         }
 
         /*
@@ -46,18 +56,18 @@ namespace Win11Toolbar
             cf.Show();
         }
 
-        private void Form1_LostFocus(object sender, EventArgs e)
+        /*
+        private void ToobarForm_LostFocus(object sender, EventArgs e)
         {
             this.Hide();
         }
-
+        */
         private void BackgroundPanel_Paint(object sender, PaintEventArgs pe)
         {
             Panel p = (Panel)sender;
             
             int CornerRadius = 8;
             Graphics g = pe.Graphics;
-            Brush b = new SolidBrush(Theme.Background);
             TextureBrush tBrush = new TextureBrush(new Bitmap(1, 1));
             Rectangle r = new Rectangle(0, 0, this.Width - 7, this.Height - 7);
             using (var bmp = new Bitmap(r.Width, r.Height))
@@ -67,42 +77,21 @@ namespace Win11Toolbar
                 tBrush = new TextureBrush((Image)bmp);
             }
 
-            //CustomGraphics.FillRoundedRectangle(g, b, r, CornerRadius);
             CustomGraphics.FillRoundedRectangle(g, tBrush, r, CornerRadius);
         }
 
         private void MainWindow_Paint(object sender, PaintEventArgs pe)
         {
             Win11Toolbar.ToobarForm p = (Win11Toolbar.ToobarForm)sender;
+
             int CornerRadius = 8;
             Graphics g = pe.Graphics;
+
             Brush b = new SolidBrush(Theme.Background);
-            Rectangle r = new Rectangle(0, 0, this.Width - 7, this.Height - 7);
+            CustomGraphics.FillRoundedRectangle(g, b, new Rectangle(0, 0, this.Width - 7, this.Height - 7), CornerRadius);
 
-            CustomGraphics.FillRoundedRectangle(g, b, r, CornerRadius);
-            //CustomGraphics.FillRoundedRectangle(g, b, p.ClientRectangle, CornerRadius);
-
-            /*
-            Console.WriteLine(sender.ToString());
-            Win11Toolbar.ToobarForm p = (Win11Toolbar.ToobarForm)sender;
-            Console.WriteLine(p.ClientRectangle.ToString());
-            Console.WriteLine(p.Location.ToString());
-
-            int CornerRadius = 8;
-            Graphics g = pe.Graphics;
-            //Brush b = new SolidBrush(Theme.Background);
-            TextureBrush tBrush = new TextureBrush(new Bitmap(1, 1));
-            Rectangle r = new Rectangle(0, 0, this.Width - 7, this.Height - 7);
-            using (var bmp = new Bitmap(r.Width, r.Height))
-            using (var graphics = Graphics.FromImage(bmp))
-            {
-                g.CopyFromScreen(p.Location, Point.Empty, p.ClientRectangle.Size);
-                Image bmp2 = Utilities.Blur(bmp, 1);
-                tBrush = new TextureBrush(bmp2);
-            }
-
-            CustomGraphics.FillRoundedRectangle(g, tBrush, r, CornerRadius);
-            */
+            Pen _p = new Pen(Theme.Highlight, 2);
+            CustomGraphics.DrawRoundedRectangle(g, _p, new Rectangle(1, 1, this.Width - 9, this.Height - 9), CornerRadius);
         }
 
         private void TabButton_Click(object sender, EventArgs e)

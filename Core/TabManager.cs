@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Xml.Linq;
 using static System.Net.WebRequestMethods;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Image = System.Drawing.Image;
 
 namespace Win11Toolbar
@@ -23,6 +24,8 @@ namespace Win11Toolbar
         public Dictionary<string,TabCommandPanel> TabViewsDict;
         private List<Label> TabButtons;
         private string _activeTab;
+        private Panel _mainPanel;
+        private FlowLayoutPanel _internalFlowPanel;
 
         public int MaxHeight = 130;
         public int MaxWidth = 215;
@@ -58,21 +61,46 @@ namespace Win11Toolbar
             set
             {
                 this._activeTab = value;
-                //foreach (TabCommandPanel t in this.TabViews) { t.Panel.Hide(); }
-                if (this.TabViewsDict.TryGetValue(value, out TabCommandPanel tcp))
+                Debug.WriteLine($"ActiveTab:{value}");
+                if (this._internalFlowPanel != null)
                 {
-                    tcp.Panel.Show();
-                    tcp.Build();
-                } else
-                {
-                    this.TabViews[0].Panel.Show();
-                    this.TabViews[0].Build();
+                    //foreach (TabCommandPanel t in this.TabViews) { t.Panel.Hide(); }
+                    if (this.TabViewsDict.TryGetValue(value, out TabCommandPanel tcp))
+                    {
+                        //tcp.Panel.Show();
+                        //tcp.Build();
+                        tcp.Build(this._internalFlowPanel);
+                    }
+                    else
+                    {
+                        //this.TabViews[0].Panel.Show();
+                        //this.TabViews[0].Build();
+                        this.TabViews[0].Build(this._internalFlowPanel);
+                    }
                 }
                 this.InvalidateButtons();
             }
         }
+        public Panel MainPanel
+        {
+            get
+            {
+                return this._mainPanel;
+            }
+            set
+            {
+                this._mainPanel = value;
+                Debug.WriteLine($"_internalFlowPanel:{value.Name}");
+                this._internalFlowPanel = this._buildInternalPanel();
+                this._mainPanel.Controls.Add(this._internalFlowPanel);
+                this._mainPanel.Controls.AddRange(this.TabButtons.ToArray());
+                TabManager.Instance.ActiveTab = "TabButton1";
+            }
+        }
+        /*
         public void AddTab(Panel MainPanel, string Path, Label TabButton)
         {
+            Debug.WriteLine($"AddTab: {Path}");
             TabCommandPanel _tcp = new TabCommandPanel(MainPanel, Path);
             this.TabViews.Add(_tcp);
             this.TabViewsDict.Add(TabButton.Name, _tcp);
@@ -80,9 +108,25 @@ namespace Win11Toolbar
             this.MaxHeight = (this.MaxHeight > _tcp.Height) ? this.MaxHeight : _tcp.Height;
             this.MaxWidth = (this.MaxWidth > _tcp.Width) ? this.MaxWidth : _tcp.Width;
         }
+        */
+        public void AddTab(int Index, string Path)
+        {
+            Debug.WriteLine($"AddTab: {Path}");
+            // Need to make TabButton
+            //TabCommandPanel _tcp = new TabCommandPanel(this._internalFlowPanel, Path);
+            TabCommandPanel _tcp = new TabCommandPanel( Path);
+            Label b = this._buildTabButton(Index);
+            if (this._internalFlowPanel != null) { this._internalFlowPanel.Controls.Add(b); }
+            this.TabViews.Add(_tcp);
+            if (this.TabViewsDict.ContainsKey(b.Name)) { this.TabViewsDict[""] = _tcp; }
+            else { this.TabViewsDict.Add(b.Name, _tcp); }
+            if (!this.TabButtons.Contains(b)) { this.TabButtons.Add(b); }
+            this.MaxHeight = (this.MaxHeight > _tcp.Height) ? this.MaxHeight : _tcp.Height;
+            this.MaxWidth = (this.MaxWidth > _tcp.Width) ? this.MaxWidth : _tcp.Width;
+        }
         public void UpdateTab(int TabID, string ToolbarPath)
         {
-            Console.WriteLine($"{TabID}|{ToolbarPath}|{this.TabViews.Count}");
+            Debug.WriteLine($"UpdateTab: {TabID}|{ToolbarPath}|{this.TabViews.Count}");
             if (this.TabViews.Count < TabID) { throw new NotImplementedException(); }
             this.TabViews[TabID].UpdateFolder(ToolbarPath);
             if (this.TabButtons[TabID].Name == this.ActiveTab)
@@ -91,8 +135,8 @@ namespace Win11Toolbar
                 Console.WriteLine(this.TabButtons[TabID].Name);
                 Console.WriteLine(this.ActiveTab);
                 this.TabViews[TabID].Panel.Hide();
-                this.TabViews[TabID].Build();
-                this.TabViews[TabID].Panel.Hide();
+                this.TabViews[TabID].Build(this._internalFlowPanel);
+                this.TabViews[TabID].Panel.Show();
                 this.ActiveTab = this._activeTab;
             }
         }
@@ -102,6 +146,55 @@ namespace Win11Toolbar
             {
                 l.Invalidate();
             }
+        }
+
+        private FlowLayoutPanel _buildInternalPanel()
+        {
+            // 
+            // InternalFlowPanel1
+            // 
+            FlowLayoutPanel InternalFlowPanel = new FlowLayoutPanel();
+            InternalFlowPanel.BackColor = Utilities.GetTheme().Background;
+            InternalFlowPanel.Location = new System.Drawing.Point(3, 25);
+            InternalFlowPanel.Name = "InternalFlowPanel1";
+            InternalFlowPanel.TabIndex = 0;
+            return InternalFlowPanel;
+        }
+
+        private Label _buildTabButton(int Index)
+        {
+            Debug.WriteLine($"_buildTabButton");
+            Label TabButton = new Label();
+            TabButton.Location = new System.Drawing.Point(30*(Index-1), 0);
+            TabButton.Size = new System.Drawing.Size(30, 20);
+            TabButton.AutoSize = false;
+            TabButton.ForeColor = System.Drawing.Color.FromArgb(156, 164, 169);
+            TabButton.Name = $"TabButton{Index}";
+            TabButton.TabIndex = Index;
+            TabButton.Text = $"{Index}";
+            TabButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            TabButton.Click += TabManager.TabButton_Click;
+            TabButton.Paint += TabManager.TabButton_Paint;
+            return TabButton;
+        }
+
+        public static void TabButton_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine($"TabButton_Click");
+            Label s = (Label)sender;
+            TabManager.Instance.ActiveTab = s.Name;
+        }
+        public static void TabButton_Paint(object sender, PaintEventArgs pe)
+        {
+            Debug.WriteLine($"TabButton_Paint");
+            Label s = (Label)sender;
+            Debug.WriteLine($"{s.Name}");
+            if (s.Name != TabManager.Instance.ActiveTab) { return; }
+
+            Graphics g = pe.Graphics;
+            Brush b = new SolidBrush(Color.FromArgb(96, 205, 255));
+            Rectangle r = new Rectangle(6, 18, 16, 2);
+            g.FillRectangle(b, r);
         }
     }
     internal class TabCommandPanel
@@ -128,10 +221,31 @@ namespace Win11Toolbar
             this.Panel = MainPanel;
             this.ProcessFolder(Path);
         }
+        public TabCommandPanel(string Path)
+        {
+            this.ProcessFolder(Path);
+        }
+        public void Build(Panel MainPanel)
+        {
+            Debug.WriteLine($"Build:_internalFlowPanel");
+            this.Panel = MainPanel;
+            this.Panel.Controls.Clear();
+            this.Panel.Dock = System.Windows.Forms.DockStyle.None;
+            this.Panel.HorizontalScroll.Maximum = 0;
+            this.Panel.AutoScroll = false;
+            this.Panel.VerticalScroll.Visible = false;
+            this.Panel.HorizontalScroll.Visible = false;
+            this.Panel.AutoScroll = true;
+            this.Panel.Height = this.Height;
+            this.Panel.Width = this.Width;
+
+            this.Build();
+        }
         public void Build()
         {
+            Debug.WriteLine($"Build");
             Debug.WriteLine("****** StartBuild");
-            this.Panel.Controls.Clear();
+
             foreach (KeyValuePair<string,Image> icon in this._toolbarIcons)
             {
 
@@ -223,9 +337,8 @@ namespace Win11Toolbar
         }
         public void UpdateFolder(string Path)
         {
-            this.Panel.Controls.Clear();
             this.ProcessFolder(Path);
-            this.Build();
+            //this.Build(this.Panel);
         }
 
         private void ProcessFolder(string path)
@@ -233,15 +346,7 @@ namespace Win11Toolbar
             if (!Directory.Exists(path)) { return; }
             this._toolbarIcons.Clear();
             this._path = path;
-
-            this.Panel.Dock = System.Windows.Forms.DockStyle.None;
-            this.Panel.HorizontalScroll.Maximum = 0;
-            this.Panel.AutoScroll = false;
-            this.Panel.VerticalScroll.Visible = false;
-            this.Panel.HorizontalScroll.Visible = false;
-            this.Panel.AutoScroll = true;
-
-            Console.WriteLine($"ProcessFolder: {this.Panel.Height}");
+            //Console.WriteLine($"ProcessFolder: {this.Panel.Height}");
 
             string[] files = Directory.GetFiles(path);
             int _rows = 0;
@@ -266,8 +371,6 @@ namespace Win11Toolbar
 
             this.Height = (_rows) * 25;
             this.Width = _maxWidth + 20;
-            this.Panel.Height = this.Height;
-            this.Panel.Width = this.Width;
         }
     }
 }

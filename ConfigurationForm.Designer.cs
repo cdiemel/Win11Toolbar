@@ -54,14 +54,15 @@ namespace Win11Toolbar
             this.BackPanel.Controls.Add(this.SaveButton);
             this.BackPanel.Controls.Add(this.TopGrabPanel);
             this.BackPanel.Controls.Add(this.ContentPanel);
-            this.BackPanel.Location = new System.Drawing.Point(-1, -1);
+            this.BackPanel.Location = new System.Drawing.Point(0, 0);
             this.BackPanel.Name = "BackPanel";
-            this.BackPanel.Size = new System.Drawing.Size(701, 352);
+            this.BackPanel.Size = new System.Drawing.Size(700, 350);
             this.BackPanel.Paint += BackPanel_Paint;
             // 
             // ContentPanel
             // 
-            this.ContentPanel.BackColor = Utilities.GetTheme().Highlight;
+            //this.ContentPanel.BackColor = Utilities.GetTheme().Highlight;
+            this.ContentPanel.BackColor = Color.Transparent;
             this.ContentPanel.Controls.Add(this.Tab2FolderPathLabel);
             this.ContentPanel.Controls.Add(this.Tab1FolderPathLabel);
             this.ContentPanel.Controls.Add(this.Tab2SelectButton);
@@ -72,6 +73,7 @@ namespace Win11Toolbar
             this.ContentPanel.Name = "ContentPanel";
             this.ContentPanel.Size = new System.Drawing.Size(680, 111);
             this.ContentPanel.TabIndex = 3;
+            this.ContentPanel.Paint += ContentPanel_Paint;
             // 
             // Tab2FolderPathLabel
             // 
@@ -118,6 +120,7 @@ namespace Win11Toolbar
             this.Tab1SelectButton.Text = "Select Folder";
             this.Tab1SelectButton.UseVisualStyleBackColor = false;
             this.Tab1SelectButton.Paint += AllButton_Paint;
+            this.Tab1SelectButton.Click += (o, e) => { FolderSelectButton_Click(o, e, 1); };
             // 
             // Tab2SelectButton
             // 
@@ -132,6 +135,7 @@ namespace Win11Toolbar
             this.Tab2SelectButton.Text = "Select Folder";
             this.Tab2SelectButton.UseVisualStyleBackColor = false;
             this.Tab2SelectButton.Paint += AllButton_Paint;
+            this.Tab2SelectButton.Click += (o,e) => { FolderSelectButton_Click(o,e,2); } ;
             // 
             // Tab2FolderLabel
             // 
@@ -175,8 +179,8 @@ namespace Win11Toolbar
             this.CloseButton.MouseLeave += (o, e) => { this._closeHover = false; this.CloseButton.Invalidate(); };
             this.CloseButton.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.CloseButton.Name = "CloseButton";
-            this.CloseButton.Size = new System.Drawing.Size(40, 25);
-            this.CloseButton.Location = new System.Drawing.Point(this.TopGrabPanel.Width - this.CloseButton.Width, 0);
+            this.CloseButton.Size = new System.Drawing.Size(38, 24);
+            this.CloseButton.Location = new System.Drawing.Point(this.TopGrabPanel.Width - this.CloseButton.Width-2, 1);
             this.CloseButton.TabIndex = 0;
             this.CloseButton.Click += (o, e) => { this.Close(); };
             this.CloseButton.Paint += CloseButton_Paint;

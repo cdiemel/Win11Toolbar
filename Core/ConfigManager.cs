@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Win11Toolbar.Core
 {
@@ -29,6 +32,7 @@ namespace Win11Toolbar.Core
         //
         private ConfigManager()
         {
+            Debug.WriteLine("ConfigManager");
             this._toolbarPaths = new string[5];
             this._GetConfig();
         }
@@ -36,7 +40,9 @@ namespace Win11Toolbar.Core
         public string[] ToolbarPaths
         {
             get { return this._toolbarPaths; }
-            set { 
+            set
+            {
+                Debug.WriteLine("ToolbarPaths:Set");
                 this._toolbarPaths = value;
                 this._SetConfig();
                 this.UpdateConfig();
@@ -45,16 +51,26 @@ namespace Win11Toolbar.Core
 
         private void _GetConfig()
         {
-            this._toolbarPaths = new string[5];
+            Debug.WriteLine("_GetConfig");
+            //List<string> paths = new List<string>();
+            //int i = paths.FindIndex(a => a.ToString() == "");
+            //paths.Insert(i, this._toolbarPaths[i]);
+
+            this._toolbarPaths = new string[10];
             Console.WriteLine(this._toolbarPaths[1]);
-            string lines = File.ReadAllText(@"C:\Users\casdiem2\Desktop\Win11Toolbar.wtb11c");
+            string lines = File.ReadAllText($@"{System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\Desktop\Win11Toolbar.wtb11c");
             Console.WriteLine(lines);
             foreach (string line in lines.Trim().Split('\r'))
             {
                 string[] parts = line.Trim().Split('|');
                 if (!int.TryParse(parts[0], out int index)) continue;
                 if (index > this._toolbarPaths.Length - 1) { throw new ArgumentOutOfRangeException("index"); }
-                this._toolbarPaths[index] = parts[1];
+                Debug.WriteLine($"_GetConfig: {parts[1]}");
+                if (Directory.Exists(parts[1]))
+                {
+                    this._toolbarPaths[index] = parts[1];
+                    TabManager.Instance.AddTab(index+1, parts[1]);
+                }
             }
             Console.WriteLine(this._toolbarPaths[0]);
         }

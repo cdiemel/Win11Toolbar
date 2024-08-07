@@ -94,14 +94,14 @@ namespace Win11Toolbar
             CustomGraphics.DrawRoundedRectangle(g, _p, new Rectangle(1, 1, this.Width - 9, this.Height - 9), CornerRadius);
         }
 
-        private void TabButton_Click(object sender, EventArgs e)
+        public void TabButton_Click(object sender, EventArgs e)
         {
             Label s = (Label)sender;
             TabManager.Instance.ActiveTab = s.Name;
             //TabManager.Instance.InvalidateButtons();
 
         }
-        private void TabButton_Paint(object sender, PaintEventArgs pe)
+        public void TabButton_Paint(object sender, PaintEventArgs pe)
         {
             Label s = (Label)sender;
             if (s.Name != TabManager.Instance.ActiveTab) { return; }

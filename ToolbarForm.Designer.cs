@@ -121,7 +121,7 @@ namespace Win11Toolbar
             // InternalFlowPanel1
             // 
             this.InternalFlowPanel1.BackColor = Theme.Background;
-            this.InternalFlowPanel1.Location = new System.Drawing.Point(5, 25);
+            this.InternalFlowPanel1.Location = new System.Drawing.Point(3, 25);
             this.InternalFlowPanel1.Name = "InternalFlowPanel1";
             //this.InternalFlowPanel1.Size = new System.Drawing.Size(215, 130);
             this.InternalFlowPanel1.TabIndex = 0;
@@ -130,17 +130,24 @@ namespace Win11Toolbar
             // 
             this.InternalFlowPanel2.BackColor = Theme.Background;
             this.InternalFlowPanel2.BackColor = Color.LimeGreen;
-            this.InternalFlowPanel2.Location = new System.Drawing.Point(5, 25);
+            this.InternalFlowPanel2.Location = new System.Drawing.Point(3, 25);
             this.InternalFlowPanel2.Name = "InternalFlowPanel2";
             //this.InternalFlowPanel2.Size = new System.Drawing.Size(215, 130);
             this.InternalFlowPanel2.TabIndex = 0;
             this.InternalFlowPanel2.Hide();
 
+            // v1.0
             //TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\PS", this.TabButton1);
             //TabManager.Instance.AddTab(this.InternalFlowPanel2, @"C:\Users\casdiem2\Desktop\Epic", this.TabButton2);
-            TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\PS", this.TabButton1);
-            TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\Epic", this.TabButton2);
-            TabManager.Instance.ActiveTab = this.TabButton1.Name;
+            //v2.0
+            //TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\PS", this.TabButton1);
+            //TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\Epic", this.TabButton2);
+
+            // v3.0
+            TabManager.Instance.MainPanel = this.BackgroundPanel;
+            //TabManager.Instance.AddTab(@"C:\Users\casdiem2\Desktop\PS");
+            //TabManager.Instance.AddTab(@"C:\Users\casdiem2\Desktop\Epic");
+            //TabManager.Instance.ActiveTab = this.TabButton1.Name;
 
             int PanelHeightOffset = TabManager.Instance.MaxHeight - 130;
             int PanelWidthOffset = TabManager.Instance.MaxWidth - 215;
@@ -155,12 +162,12 @@ namespace Win11Toolbar
             // 
             this.BackgroundPanel.BackColor = Theme.Background;
             //this.BackgroundPanel.BackColor = Color.OliveDrab;
-            this.BackgroundPanel.Controls.Add(this.TabButton1);
-            this.BackgroundPanel.Controls.Add(this.TabButton2);
+            //this.BackgroundPanel.Controls.Add(this.TabButton1);
+            //this.BackgroundPanel.Controls.Add(this.TabButton2);
             this.BackgroundPanel.Controls.Add(this.SettingsButton);
             this.BackgroundPanel.Controls.Add(this.InternalFlowPanel1);
-            this.BackgroundPanel.Controls.Add(this.InternalFlowPanel2);
-            this.BackgroundPanel.Location = new System.Drawing.Point(5, 5);
+            //this.BackgroundPanel.Controls.Add(this.InternalFlowPanel2);
+            this.BackgroundPanel.Location = new System.Drawing.Point(7, 5);
             this.BackgroundPanel.Name = "BackgroundPanel";
             this.BackgroundPanel.Size = new System.Drawing.Size(195 + PanelWidthOffset, 145 + PanelHeightOffset);
             this.BackgroundPanel.TabIndex = 1;
@@ -180,6 +187,7 @@ namespace Win11Toolbar
             this.Text = "ToobarForm";
             this.TopMost = true;
             this.Controls.Add(this.BackgroundPanel);
+            this.Icon = Win11Toolbar.Properties.Resources.favicon2;
 
             this.Paint += MainWindow_Paint;
 

@@ -29,14 +29,14 @@ namespace Win11Toolbar
             cm = ConfigManager.Instance;
             tm = TabManager.Instance;
             _toolbarForm = new Win11Toolbar.ToobarForm();
-            _configForm = new Win11Toolbar.ConfigurationForm();
+            //_configForm = new Win11Toolbar.ConfigurationForm();
 
             _toolbarForm.Hide();
             _toolbarForm.LostFocus += _toolbarForm_LostFocus;
             NotifyIcon _notifiyIcon = new NotifyIcon();
             _notifiyIcon.MouseClick += _notifiyIcon_MouseClick;
             _notifiyIcon.Visible = true;
-            _notifiyIcon.Icon = Win11Toolbar.Properties.Resources.turtle_shell;
+            _notifiyIcon.Icon = Win11Toolbar.Properties.Resources.favicon2;
             Application.Run();
         }
 
@@ -50,9 +50,11 @@ namespace Win11Toolbar
                     _toolbarForm.form_X = cursPos.X - (_toolbarForm.Width / 2);
                 }
                 _toolbarForm.Show();
+                _toolbarForm.Activate();
             }
             else if (e.Button == MouseButtons.Right)
             {
+                _configForm = new Win11Toolbar.ConfigurationForm();
                 _configForm.Show();
             }
         }

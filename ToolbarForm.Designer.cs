@@ -136,17 +136,10 @@ namespace Win11Toolbar
             this.InternalFlowPanel2.TabIndex = 0;
             this.InternalFlowPanel2.Hide();
 
-            // v1.0
-            //TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\PS", this.TabButton1);
-            //TabManager.Instance.AddTab(this.InternalFlowPanel2, @"C:\Users\casdiem2\Desktop\Epic", this.TabButton2);
-            //v2.0
-            //TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\PS", this.TabButton1);
-            //TabManager.Instance.AddTab(this.InternalFlowPanel1, @"C:\Users\casdiem2\Desktop\Epic", this.TabButton2);
-
             // v3.0
             TabManager.Instance.MainPanel = this.BackgroundPanel;
-            //TabManager.Instance.AddTab(@"C:\Users\casdiem2\Desktop\PS");
-            //TabManager.Instance.AddTab(@"C:\Users\casdiem2\Desktop\Epic");
+            //TabManager.Instance.AddTab(@"C:\Users\user\Desktop\Folder1");
+            //TabManager.Instance.AddTab(@"C:\Users\user\Desktop\Folder2");
             //TabManager.Instance.ActiveTab = this.TabButton1.Name;
 
             int PanelHeightOffset = TabManager.Instance.MaxHeight - 130;
@@ -173,7 +166,7 @@ namespace Win11Toolbar
             this.BackgroundPanel.TabIndex = 1;
 
             // 
-            // ToobarForm
+            // ToolbarForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
